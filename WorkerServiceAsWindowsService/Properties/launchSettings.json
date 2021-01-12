@@ -1,0 +1,10 @@
+﻿{
+  "profiles": {
+    "Csob.Project.WindowsService": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}

@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Worker">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <UserSecretsId>dotnet-Csob.Project.WindowsService-E8F2E805-C110-41AF-978D-6B7D73AD9AC2</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Csob.Extensions.Logging" Version="3.1.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="3.1.10" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="3.1.9" />
+    <PackageReference Include="Quartz.Jobs" Version="3.0.7" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Csob.Project.Common\Csob.Project.Common.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="ManualUnInstallService.ps1">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ManualInstallService.ps1">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+</Project>
