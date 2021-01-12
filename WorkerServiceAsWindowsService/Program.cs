@@ -26,7 +26,7 @@ namespace Csob.Project.WindowsService
 
         public static IHostBuilder CreateHostBuilder(string[] args)
         {
-           
+
 
             var builder = new ConfigurationBuilder()
                            .SetBasePath(Directory.GetCurrentDirectory())
@@ -46,8 +46,8 @@ namespace Csob.Project.WindowsService
                           services.AddLogging(logging => logging.AddCsobLogging(Configuration));
                           services.AddHostedService<DefaultWorker>();
                           services.Configure<QuartzJobsConfig>(quartzConfig);
-                         //All jobs registration
-                         jobTypes.ForEach(s => services.AddScoped(Type.GetType($"{s.FullName}, {s.Assembly.FullName}")));
+                          //All jobs registration
+                          jobTypes.ForEach(s => services.AddScoped(s));
                       });
 
         }
