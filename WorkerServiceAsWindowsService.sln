@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Csob.Project.WindowsService
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Csob.Project.Common", "Csob.Project.Common\Csob.Project.Common.csproj", "{C675CD4A-64F4-4415-972A-C564D0BD32A7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Csob.Calendar", "Csob.Calendar\Csob.Calendar.csproj", "{A8AB7442-7E1F-44D2-8A8E-20B97C555E3E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{C675CD4A-64F4-4415-972A-C564D0BD32A7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C675CD4A-64F4-4415-972A-C564D0BD32A7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C675CD4A-64F4-4415-972A-C564D0BD32A7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A8AB7442-7E1F-44D2-8A8E-20B97C555E3E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A8AB7442-7E1F-44D2-8A8E-20B97C555E3E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A8AB7442-7E1F-44D2-8A8E-20B97C555E3E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A8AB7442-7E1F-44D2-8A8E-20B97C555E3E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

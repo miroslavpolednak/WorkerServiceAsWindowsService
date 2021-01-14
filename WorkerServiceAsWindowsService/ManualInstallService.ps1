@@ -2,8 +2,8 @@
 $dir = get-location
 $nameOfServiceExe = "Csob.Project.WindowsService.exe"
 $exePath =  "$dir\$nameOfServiceExe"
-$username = "TDA001\JE31239"
-$password = convertto-securestring -String "svodoveEKGfbmi18" -AsPlainText -Force  
+$username = "TDA001\JE"
+$password = convertto-securestring -String "somepassword" -AsPlainText -Force  
 $cred = new-object -typename System.Management.Automation.PSCredential -argumentlist $username, $password
 
 $existingService = Get-WmiObject -Class Win32_Service -Filter "Name='$serviceName'"

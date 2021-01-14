@@ -1,4 +1,6 @@
+using Csob.Calendar;
 using Csob.Project.Common;
+using Csob.Project.WindowsService.CelendarAdapter;
 using Csob.Project.WindowsService.Helpers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -20,17 +22,18 @@ namespace Csob.Project.WindowsService
 
         public static void Main(string[] args)
         {
+            DaysGenerator daysGenerator = new DaysGenerator();
+            var test = daysGenerator.GetAllCZNotWorkingDay(2021);
+            
             SetWorkingDirectory();
             CreateHostBuilder(args).Build().Run();
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args)
         {
-
-
             var builder = new ConfigurationBuilder()
-                           .SetBasePath(Directory.GetCurrentDirectory())
-                           .AddJsonFile("appsettings.json");
+                                       .SetBasePath(Directory.GetCurrentDirectory())
+                                       .AddJsonFile("appsettings.json");
 
             Configuration = new ConfigurationBuilder()
                     .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
@@ -46,6 +49,8 @@ namespace Csob.Project.WindowsService
                           services.AddLogging(logging => logging.AddCsobLogging(Configuration));
                           services.AddHostedService<DefaultWorker>();
                           services.Configure<QuartzJobsConfig>(quartzConfig);
+                          services.AddSingleton<IDaysGenerator, DaysGenerator>();
+                          services.AddSingleton<IQuartzCalendarManager, QuartzCalendarManager>();
                           //All jobs registration
                           jobTypes.ForEach(s => services.AddScoped(s));
                       });

@@ -64,6 +64,7 @@ namespace Csob.Project.WindowsService
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
+
             while (!stoppingToken.IsCancellationRequested)
             {
                 _logger.LogInformation("Service is live at: {time}", DateTimeOffset.Now);
@@ -99,11 +100,19 @@ namespace Csob.Project.WindowsService
                     IJobDetail cronJob = JobBuilder.Create(job)
                     .WithIdentity(job.Name)
                     .Build();
-                    ITrigger cronTrigger = TriggerBuilder.Create()
+                    var cronTriggerConf = TriggerBuilder.Create()
                     .WithIdentity($"{job.Name}trigger")
                     .WithCronSchedule(jobConfiguration.CronTrigger)
-                    .ForJob(job.Name)
-                    .Build();
+                    .ForJob(job.Name);
+
+                    bool existCalendar = false;
+                    //ToDo implenet calendar logic
+                    if (existCalendar)
+                    {
+                        cronTriggerConf.ModifiedByCalendar("CalendarName");
+                    }
+
+                    var cronTrigger = cronTriggerConf.Build();
                     await scheduler.ScheduleJob(cronJob, cronTrigger);
                 }
             }
