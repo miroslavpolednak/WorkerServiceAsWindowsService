@@ -22,9 +22,6 @@ namespace Csob.Project.WindowsService
 
         public static void Main(string[] args)
         {
-            DaysGenerator daysGenerator = new DaysGenerator();
-            var test = daysGenerator.GetAllCZNotWorkingDay(2021);
-            
             SetWorkingDirectory();
             CreateHostBuilder(args).Build().Run();
         }
@@ -48,6 +45,7 @@ namespace Csob.Project.WindowsService
                       {
                           services.AddLogging(logging => logging.AddCsobLogging(Configuration));
                           services.AddHostedService<DefaultWorker>();
+                          services.AddHostedService<TestWorker1>();
                           services.Configure<QuartzJobsConfig>(quartzConfig);
                           services.AddSingleton<IDaysGenerator, DaysGenerator>();
                           services.AddSingleton<IQuartzCalendarManager, QuartzCalendarManager>();

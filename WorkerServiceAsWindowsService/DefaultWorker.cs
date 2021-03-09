@@ -1,4 +1,5 @@
 using Csob.Project.Common;
+using Csob.Project.WindowsService.CelendarAdapter;
 using Csob.Project.WindowsService.Helpers;
 using Csob.Project.WindowsService.Jobs;
 using Microsoft.Extensions.Hosting;
@@ -22,18 +23,26 @@ namespace Csob.Project.WindowsService
         private readonly ILogger<DefaultWorker> _logger;
         private readonly IServiceProvider _services;
         private readonly IOptions<QuartzJobsConfig> _quartzConfig;
+        private readonly IQuartzCalendarManager _quartzCalendarManager;
         private static StdSchedulerFactory factory;
         private static IScheduler scheduler;
 
-        public DefaultWorker(ILogger<DefaultWorker> logger, IServiceProvider services, IOptions<QuartzJobsConfig> quartzConfig)
+        public DefaultWorker(ILogger<DefaultWorker> logger,
+                             IServiceProvider services,
+                             IOptions<QuartzJobsConfig> quartzConfig,
+                             IQuartzCalendarManager quartzCalendarManager)
         {
             _logger = logger;
             _services = services;
             _quartzConfig = quartzConfig;
+            _quartzCalendarManager = quartzCalendarManager;
         }
 
         public override async Task StartAsync(CancellationToken cancellationToken)
         {
+            //Add default calendars
+            _quartzCalendarManager.AddDefaultCalendars();
+
             IJobFactory jobFactory = new JobFactory(_services);
             // Grab the Scheduler instance from the Factory
             NameValueCollection props = new NameValueCollection
@@ -64,11 +73,12 @@ namespace Csob.Project.WindowsService
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-
             while (!stoppingToken.IsCancellationRequested)
             {
-                _logger.LogInformation("Service is live at: {time}", DateTimeOffset.Now);
-                await Task.Delay(10000, stoppingToken);
+                Thread thread = Thread.CurrentThread;
+                string threadName = thread.Name;
+                _logger.LogInformation("Service {time} {threadName}", DateTimeOffset.Now, threadName);
+                await Task.Delay(1000, stoppingToken);
             }
         }
 
@@ -78,6 +88,8 @@ namespace Csob.Project.WindowsService
             var jobs = DiHelper.GetAllTypesThatImplement(typeof(IJob));
             foreach (Type job in jobs)
             {
+                //ToDo add calendar logic
+
                 QuartzJob jobConfiguration = _quartzConfig.Value?.Jobs?.FirstOrDefault(r => r.JobName == job.Name);
                 if (jobConfiguration == null)
                 {
@@ -98,18 +110,18 @@ namespace Csob.Project.WindowsService
                 if (!string.IsNullOrWhiteSpace(jobConfiguration.CronTrigger))
                 {
                     IJobDetail cronJob = JobBuilder.Create(job)
-                    .WithIdentity(job.Name)
-                    .Build();
+                     .WithIdentity(job.Name)
+                     .Build();
                     var cronTriggerConf = TriggerBuilder.Create()
                     .WithIdentity($"{job.Name}trigger")
                     .WithCronSchedule(jobConfiguration.CronTrigger)
                     .ForJob(job.Name);
 
-                    bool existCalendar = false;
-                    //ToDo implenet calendar logic
-                    if (existCalendar)
+                    if (!string.IsNullOrWhiteSpace(jobConfiguration.CalendarName))
                     {
-                        cronTriggerConf.ModifiedByCalendar("CalendarName");
+                        NamedCalendar calendar = _quartzCalendarManager.GetSpecificCalendar(jobConfiguration.CalendarName);
+                        await scheduler.AddCalendar(jobConfiguration.CalendarName, calendar, false, true);
+                        cronTriggerConf.ModifiedByCalendar(jobConfiguration.CalendarName);
                     }
 
                     var cronTrigger = cronTriggerConf.Build();
@@ -117,6 +129,7 @@ namespace Csob.Project.WindowsService
                 }
             }
         }
+
         public override void Dispose()
         {
 

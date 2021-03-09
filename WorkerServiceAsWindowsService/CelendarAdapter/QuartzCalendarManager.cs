@@ -23,6 +23,7 @@ namespace Csob.Project.WindowsService.CelendarAdapter
         public void AddDefaultCalendars()
         {
             CreateCzNOtworkingDaysCalendar();
+
         }
 
         private void CreateCzNOtworkingDaysCalendar()
