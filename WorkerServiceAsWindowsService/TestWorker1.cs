@@ -19,9 +19,9 @@ namespace Csob.Project.WindowsService
             _services = services;
         }
 
-
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
+            // This is example of async load of worker, this approach is good when ExecuteAsync method contain heavy time consuming sync code
             await Task.Run(async () =>
               {
                   while (!stoppingToken.IsCancellationRequested)

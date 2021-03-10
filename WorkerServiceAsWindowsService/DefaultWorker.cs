@@ -42,7 +42,6 @@ namespace Csob.Project.WindowsService
         {
             //Add default calendars
             _quartzCalendarManager.AddDefaultCalendars();
-
             IJobFactory jobFactory = new JobFactory(_services);
             // Grab the Scheduler instance from the Factory
             NameValueCollection props = new NameValueCollection
