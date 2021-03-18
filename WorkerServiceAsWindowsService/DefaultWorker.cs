@@ -1,7 +1,9 @@
 using Csob.Project.Common;
 using Csob.Project.WindowsService.CelendarAdapter;
+using Csob.Project.WindowsService.FileWatcher;
 using Csob.Project.WindowsService.Helpers;
 using Csob.Project.WindowsService.Jobs;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -24,22 +26,29 @@ namespace Csob.Project.WindowsService
         private readonly IServiceProvider _services;
         private readonly IOptions<QuartzJobsConfig> _quartzConfig;
         private readonly IQuartzCalendarManager _quartzCalendarManager;
+        private readonly IEnumerable<IWatcher> _watchers;
         private static StdSchedulerFactory factory;
         private static IScheduler scheduler;
 
         public DefaultWorker(ILogger<DefaultWorker> logger,
                              IServiceProvider services,
                              IOptions<QuartzJobsConfig> quartzConfig,
-                             IQuartzCalendarManager quartzCalendarManager)
+                             IQuartzCalendarManager quartzCalendarManager,
+                             IEnumerable<IWatcher> watchers
+                           )
         {
             _logger = logger;
             _services = services;
             _quartzConfig = quartzConfig;
             _quartzCalendarManager = quartzCalendarManager;
+            _watchers = watchers;
         }
 
         public override async Task StartAsync(CancellationToken cancellationToken)
         {
+            //Run all watchers
+            RunAllWatchers();
+
             //Add default calendars
             _quartzCalendarManager.AddDefaultCalendars();
             IJobFactory jobFactory = new JobFactory(_services);
@@ -63,6 +72,15 @@ namespace Csob.Project.WindowsService
             await base.StartAsync(cancellationToken);
         }
 
+        private void RunAllWatchers()
+        {
+            IEnumerable<Type> allIWatcher = DiHelper.GetAllTypesThatImplement(typeof(IWatcher));
+            foreach (var item in allIWatcher)
+            {
+                IWatcher watcher = (IWatcher)_services.GetRequiredService(item);
+                watcher.StartWatching();
+            }
+        }
 
         public override async Task StopAsync(CancellationToken cancellationToken)
         {
@@ -77,7 +95,7 @@ namespace Csob.Project.WindowsService
                 Thread thread = Thread.CurrentThread;
                 string threadName = thread.Name;
                 _logger.LogInformation("Service {time} {threadName}", DateTimeOffset.Now, threadName);
-                await Task.Delay(1000, stoppingToken);
+                await Task.Delay(100000, stoppingToken);
             }
         }
 

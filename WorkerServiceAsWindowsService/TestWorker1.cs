@@ -29,7 +29,7 @@ namespace Csob.Project.WindowsService
                       using var scope = _services.CreateScope();
                       var logger = scope.ServiceProvider.GetRequiredService<ILogger<TestWorker1>>();
                       logger.LogInformation("TestWorker1: {time}", DateTimeOffset.Now);
-                      await Task.Delay(2000, stoppingToken);
+                      await Task.Delay(200000, stoppingToken);
                   }
               }, stoppingToken);
         }
