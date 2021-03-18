@@ -1,6 +1,7 @@
 using Csob.Calendar;
 using Csob.Project.Common;
 using Csob.Project.WindowsService.CelendarAdapter;
+using Csob.Project.WindowsService.FileWatcher;
 using Csob.Project.WindowsService.Helpers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -38,6 +39,7 @@ namespace Csob.Project.WindowsService
 
             var quartzConfig = Configuration.GetSection("QuartzJobsConfig");
             List<Type> jobTypes = DiHelper.GetAllTypesThatImplement(typeof(IJob));
+            List<Type> watcherTypes = DiHelper.GetAllTypesThatImplement(typeof(IWatcher));
 
             return Host.CreateDefaultBuilder(args)
                       .UseWindowsService()
@@ -51,6 +53,7 @@ namespace Csob.Project.WindowsService
                           services.AddSingleton<IQuartzCalendarManager, QuartzCalendarManager>();
                           //All jobs registration
                           jobTypes.ForEach(s => services.AddScoped(s));
+                          watcherTypes.ForEach(s => services.AddSingleton(s));
                       });
 
         }
